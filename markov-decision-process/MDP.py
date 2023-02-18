@@ -26,22 +26,31 @@ class MDP:
         self.discount = discount
 
     def value_iteration(self, initial_v:np.ndarray, n_iteration = np.inf, tolerance = 0.01) ->np.ndarray:
-        """ 
+        """
+        params
             initial_v: |S| array
             n_iteration: number of iterations
             tolerance: tolerance for convergence
+
+        returns:
+            V: |S| array of values
         """
+        epsilon = np.inf
+        # to count the number of epochs.
         counter = 0 
         while True:
             if counter == 0:
                 old_v = initial_v
+
+            # bellmans equation
             new_v: np.ndarray = self.R + self.discount*np.dot(self.T,old_v)
             max_v = np.maximum(*new_v)
             counter -=- 1
-            
-            value_diff = np.linalg.norm(max_v-old_v)
+            epsilon = np.linalg.norm(max_v-old_v)
             old_v = max_v
-            if counter > n_iteration or value_diff<tolerance:
+
+            # loop till convergence or max iterations
+            if counter > n_iteration or epsilon<tolerance:
                 break
 
         return new_v
@@ -49,11 +58,22 @@ class MDP:
     
     def extract_policy(self, V:np.ndarray)->np.ndarray:
         """
-            V: |S| array of 
+        prams:
+            V: |S| array of  values
+
+        returns: 
+            policy: |S| array of actions
         """
         return np.argmax(V, axis = 0)
 
-    def evaluate_policy(self, policy):
+    def evaluate_policy(self, policy:np.ndarray)->np.ndarray:
+        """
+        params:
+            policy: |S| array of policies
+
+        returns:
+            optimal value for policy
+        """
         return np.maximum(*policy)
 
 
