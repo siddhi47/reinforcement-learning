@@ -33,10 +33,14 @@ class MDP:
         """
         counter = 0 
         while True:
-            old_v = initial_v
+            if counter == 0:
+                old_v = initial_v
             new_v: np.ndarray = self.R + self.discount*np.dot(self.T,old_v)
+            max_v = np.maximum(*new_v)
             counter -=- 1
-            value_diff = np.linalg.norm(new_v-old_v)
+            
+            value_diff = np.linalg.norm(max_v-old_v)
+            old_v = max_v
             if counter > n_iteration or value_diff<tolerance:
                 break
 
@@ -47,9 +51,10 @@ class MDP:
         """
             V: |S| array of 
         """
+        return np.argmax(V, axis = 0)
 
-        return np.array(np.zeros(2))
-
+    def evaluate_policy(self, policy):
+        return np.maximum(*policy)
 
 
 
