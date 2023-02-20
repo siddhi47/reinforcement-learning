@@ -2,21 +2,15 @@ import pytest
 import numpy as np
 from MDP import MDP
 
+
 @pytest.fixture
 def T():
     T = np.array(
-            [
-                [[0.5, 0.5, 0, 0],
-                [0, 1, 0, 0],
-                [0.5, 0.5, 0, 0],
-                [0, 1, 0, 0]],
-
-                [[1, 0, 0, 0],
-                [0.5, 0, 0, 0.5],
-                [0.5, 0, 0.5, 0],
-                [0, 0, 0.5, 0.5]]
-                ]
-            )
+        [
+            [[0.5, 0.5, 0, 0], [0, 1, 0, 0], [0.5, 0.5, 0, 0], [0, 1, 0, 0]],
+            [[1, 0, 0, 0], [0.5, 0, 0, 0.5], [0.5, 0, 0.5, 0], [0, 0, 0.5, 0.5]],
+        ]
+    )
 
     return T
 
@@ -25,38 +19,77 @@ def T():
 def R():
     return np.array([[0], [0], [10], [10]])
 
+
 @pytest.fixture
 def gamma():
     return 0.9
+
 
 @pytest.fixture
 def mdp(T, R, gamma):
     return MDP(T, R, gamma)
 
+
 @pytest.fixture
 def initial_v():
     return np.array([[0], [0], [0], [0]])
 
+@pytest.fixture
+def initial_policy():
+    return np.array([[1],[1],[1],[1]])
+
 def test_MDP(T, R, gamma):
     MDP(T, R, gamma)
 
+
 def test_value_iteration(mdp, initial_v):
-    value = mdp.value_iteration(initial_v,)
+    value = mdp.value_iteration(
+        initial_v,
+    )
     print("\nValue Function")
     print(value)
-    print(30*"*")
+    print(30 * "*")
+
 
 def test_evaluate_policy(mdp, initial_v):
     value = mdp.value_iteration(initial_v)
     policy = mdp.evaluate_policy(value)
     print("Policy evaluation")
     print(policy)
-    print(30*"*")
+    print(30 * "*")
+
 
 def test_extract_policy(mdp, initial_v):
     value = mdp.value_iteration(initial_v)
     action = mdp.extract_policy(value)
     print("Policy extraction")
     print(action)
-    print(30*"*")
+    print(30 * "*")
+
+def test_policy_iteration(mdp, initial_policy):
+    print("Policy Iteration")
+    value = mdp.policy_iteration(initial_policy)
+    print(value)
+    print(30 * "*")
+
+def test_evaluate_policy_partially(mdp, initial_policy, initial_v):
+    value = mdp.evaluate_policy_partially(initial_policy, initial_v)
+
+    print("Partial policy evaluation")
+    print(value)
+    print(30 * "*")
+
+
+def test_policy_iteration_using_linalg(mdp, initial_policy):
+    value = mdp.policy_iteration(initial_policy)
+
+    print("Policy iteration with linear algebra")
+    print(value)
+    print(30 * "*")
+
+def test_modified_policy_iteration(mdp, initial_policy):
+    value = mdp.modified_policy_iteration(initial_policy, )
+    print("Modified policy iteration")
+    print(value)
+    print(30 * "*")
 

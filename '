@@ -1,0 +1,131 @@
+"""
+    author: siddhi47
+    description: simple MDP
+    created: 02/17/2023
+"""
+
+import numpy as np
+
+
+class MDP:
+    def __init__(self, T: np.ndarray, R: np.ndarray, discount: float):
+        """
+        T: |S|x|A|x|S'| transition probability matrix
+        R: |A|X|S| array
+        discount: discount factor(gamma) between 0-1
+        """
+        if not (type(T) == type(R) == np.ndarray):
+            raise TypeError("T and R must be numpy arrays")
+        if not (T.ndim == 3 and R.ndim == 2):
+            raise ValueError("T and R must be 3D and 2D arrays respectively")
+        if type(discount) is not float:
+            raise TypeError("discount must be a float")
+        if not (0 <= discount < 1):
+            raise ValueError("discount must be between 0 and 1, i.e. [0,1)")
+        self.T = T
+        self.R = R
+        self.discount = discount
+
+    def value_iteration(
+        self, initial_v: np.ndarray, n_iteration=np.inf, tolerance=0.01
+    ) -> np.ndarray:
+        """
+        params
+            initial_v: |S| array
+            n_iteration: number of iterations
+            tolerance: tolerance for convergence
+
+        returns:
+            V: |S| array of values
+        """
+        epsilon = np.inf
+        # to count the number of epochs.
+        counter = 0
+        while True:
+            if counter == 0:
+                old_v = initial_v
+
+            # bellmans equation
+            new_v: np.ndarray = self.R + self.discount * np.dot(self.T, old_v)
+            max_v = np.maximum(*new_v)
+            counter -= -1
+            epsilon = np.linalg.norm(max_v - old_v)
+            old_v = max_v
+
+            # loop till convergence or max iterations
+            if counter > n_iteration or epsilon < tolerance:
+                break
+
+        return new_v
+
+    def extract_policy(self, V: np.ndarray) -> np.ndarray:
+        """
+        prams:
+            V: |S| array of  values
+
+        returns:
+            policy: |S| array of actions
+        """
+        return np.argmax(V, axis=0)
+
+    def evaluate_policy(self, policy: np.ndarray) -> np.ndarray:
+        """
+        params:
+            policy: |S| array of policies
+
+        returns:
+            optimal value for policy
+        """
+        return np.maximum(*policy)
+    
+    def select_T_from_policy(self, policy):
+        T = []
+        for i, p in enumerate(policy):
+            T.append(self.T[p][i])
+        return np.array(T)
+
+    def policy_iteration(
+        self, initial_policy: np.ndarray, n_iteration=np.inf
+    ) -> np.ndarray:
+        """
+        params:
+            initial_policy: Initial policy: array of |S| entries
+            n_iteration: number of iteration
+
+        return:
+            new_policy of |S| entries
+        """
+        T = self.select_T_from_policy(initial_policy)
+        # computing for initial value 
+        # V = inv(1-gamma*P)R
+        I = np.identity(self.T[0].shape[0])
+        M = I - self.discount * self.T[0] # choosing a random polcicy
+        M_inv = np.linalg.inv(M)
+        V0 = np.dot(M_inv, self.R)
+        new_policy = np.argmax(*V0)
+        print(V0)
+        #while True:
+            #V = self.R + self.discount * np.dot(self.T, V0)
+            
+            
+
+    def evaluate_policy_partially(
+        self,
+        policy: np.ndarray,
+        initial_v: np.ndarray,
+        n_iterationp=np.inf,
+        tolerance: float = 0.01,
+    ) -> np.ndarray:
+        """
+        params:
+            policy : Policy: array of |S| entries
+            initial_v: Initial value function: array of |S| entries
+            n_iterations: limit on the number of iterations: scalar (default: infinity)
+            tolerance: threshold on ‖𝑉𝑛 − 𝑉𝑛+1‖∞ that will be compared to a variable epsilon
+            (initialized to np.inf): scalar (default: 0.01)
+
+        returns:
+
+            New value function: array of |S| entries.
+        """
+        pass
