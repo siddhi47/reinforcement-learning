@@ -5,8 +5,9 @@ import os
 import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from markov_decision_process.MDP import MDP
-from test_markov_decision_process.MDP_fixtures import *
+
+from rl_toolkit.markov_decision_process.MDP import MDP
+from tests.test_markov_decision_process.MDP_fixtures import *
 
 def test_MDP(T, R, gamma):
     MDP(T, R, gamma)

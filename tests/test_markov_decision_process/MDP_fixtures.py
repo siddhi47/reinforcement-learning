@@ -3,7 +3,7 @@ import numpy as np
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from markov_decision_process.MDP import MDP
+from rl_toolkit.markov_decision_process.MDP import MDP
 
 
 @pytest.fixture
