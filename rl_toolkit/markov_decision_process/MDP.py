@@ -48,6 +48,7 @@ class MDP:
             # bellmans equation
             new_v: np.ndarray = self.R + self.discount * np.dot(self.T, old_v)
             max_v = np.maximum(*new_v)
+            print("Step: ", counter, "\nMax V: ", max_v)
             counter -= -1
             epsilon = np.linalg.norm(max_v - old_v)
             old_v = max_v
