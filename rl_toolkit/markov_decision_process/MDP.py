@@ -108,7 +108,7 @@ class MDP:
         #improve
         V = self.R + self.discount * np.dot(self.T, V0)
         policy = np.argmax(V, axis = 0)
-
+        print("Value: ", V)
         h = 0
         updated_policy = policy
         while h<n_iteration:
@@ -116,6 +116,7 @@ class MDP:
             M = I - self.discount * T
             M_inv = np.linalg.inv(M)
             Vi = np.dot(M_inv, self.R)
+            print(f"Value{h}: ", Vi)
             #improve
             V = self.R + self.discount * np.dot(self.T, Vi)
             new_policy = np.argmax(V, axis = 0)
@@ -143,6 +144,7 @@ class MDP:
         #improve
         V = self.R + self.discount * np.dot(self.T, V0)
         policy = np.argmax(V, axis = 0)
+        print("Value0: \n", V)
 
         h = 0
         updated_policy = policy
@@ -152,6 +154,8 @@ class MDP:
             
             #improve
             V = self.R + self.discount * np.dot(self.T, Vi)
+            print(f"Value{h+1}: \n", V)
+            print(f"Optimal Value{h+1}: \n", np.maximum(*V))
             new_policy = np.argmax(V, axis = 0)
             if all(np.equal(updated_policy, new_policy)):
                 break
@@ -214,15 +218,19 @@ class MDP:
         #improve
         V = self.R + self.discount * np.dot(self.T, V0)
         policy = np.argmax(V, axis = 0)
-
+        print("Initial Policy: \n", initial_policy)
+        print(f"P0:\n {policy}")
+        print("Value0: \n", V0)
         h = 0
         updated_policy = policy
         while h<n_iteration:
             #evaluate
             Vi =self.evaluate_policy_partially(updated_policy, np.array([[0], [0], [0], [0]]), n_eval_iteration)
+            print(f"Value{h+1}: \n", Vi)
             #improve
             V = self.R + self.discount * np.dot(self.T, Vi)
             new_policy = np.argmax(V, axis = 0)
+            print(f"P{h+1}:\n {new_policy}")
             if all(np.equal(updated_policy, new_policy)):
                 break
             updated_policy = new_policy

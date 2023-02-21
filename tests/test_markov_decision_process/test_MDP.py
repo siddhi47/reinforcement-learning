@@ -62,15 +62,14 @@ def test_evaluate_policy_partially(mdp, initial_policy, initial_v):
 
 
 def test_policy_iteration_using_linalg(mdp, initial_policy):
-    value = mdp.policy_iteration(initial_policy)
 
     print("Policy iteration with linear algebra")
+    value = mdp.policy_iteration(initial_policy)
     print(value)
     print(30 * "*")
 
 def test_modified_policy_iteration(mdp, initial_policy):
-    value = mdp.modified_policy_iteration(initial_policy, )
     print("Modified policy iteration")
-    print(value)
+    value = mdp.modified_policy_iteration(initial_policy, )
     print(30 * "*")
 
