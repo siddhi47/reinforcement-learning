@@ -56,7 +56,7 @@ class MDP:
             # loop till convergence or max iterations
             if counter > n_iteration or epsilon < tolerance:
                 break
-
+        print("Converged in ", counter, " steps")
         return new_v
 
     def extract_policy(self, V: np.ndarray) -> np.ndarray:
@@ -77,16 +77,33 @@ class MDP:
         returns:
             optimal value for policy
         """
-        return np.maximum(*policy)
-    
-    def select_T_from_policy(self, policy):
+        T = self.select_T_from_policy(policy)
+        # computing for initial value
+        # V = inv(1-gamma*P)R
+
+        # evaluation
+        I = np.identity(self.T[0].shape[0])
+        M = I - self.discount * T  # choosing a random polcicy
+        M_inv = np.linalg.inv(M)
+        V0 = np.dot(M_inv, self.R)
+        return V0
+
+    def select_T_from_policy(self, policy: np.ndarray) -> np.ndarray:
+        """
+        params:
+            policy: |S| array of policies
+
+        returns:
+            T: |S|x|S'| transition probability matrix
+        """
+
         T = []
         for i, p in enumerate(policy):
             T.append(self.T[p[0]][i])
         return np.array(T)
 
-
-    def policy_iteration_using_linalg(self, initial_policy: np.ndarray, n_iteration=np.inf
+    def policy_iteration_using_linalg(
+        self, initial_policy: np.ndarray, n_iteration=np.inf
     ) -> np.ndarray:
         """
         params:
@@ -97,33 +114,33 @@ class MDP:
             new_policy of |S| entries
         """
         T = self.select_T_from_policy(initial_policy)
-        #computing for initial value 
-        #V = inv(1-gamma*P)R
-        
-        #evaluation
+        # computing for initial value
+        # V = inv(1-gamma*P)R
+
+        # evaluation
         I = np.identity(self.T[0].shape[0])
-        M = I - self.discount * T # choosing a random polcicy
+        M = I - self.discount * T  # choosing a random polcicy
         M_inv = np.linalg.inv(M)
         V0 = np.dot(M_inv, self.R)
-        #improve
+        # improve
         V = self.R + self.discount * np.dot(self.T, V0)
-        policy = np.argmax(V, axis = 0)
+        policy = np.argmax(V, axis=0)
         print("Value: ", V)
         h = 0
         updated_policy = policy
-        while h<n_iteration:
+        while h < n_iteration:
             T = self.select_T_from_policy(updated_policy)
             M = I - self.discount * T
             M_inv = np.linalg.inv(M)
             Vi = np.dot(M_inv, self.R)
             print(f"Value{h}: ", Vi)
-            #improve
+            # improve
             V = self.R + self.discount * np.dot(self.T, Vi)
-            new_policy = np.argmax(V, axis = 0)
+            new_policy = np.argmax(V, axis=0)
             if all(np.equal(updated_policy, new_policy)):
                 break
             updated_policy = new_policy
-            h-=-1
+            h -= -1
         return updated_policy
 
     def policy_iteration(
@@ -137,32 +154,36 @@ class MDP:
         return:
             new_policy of |S| entries
         """
-        #evaluate
-        T = self.select_T_from_policy(initial_policy)
-        V0 =self.evaluate_policy_partially(initial_policy, np.array([[0], [0], [0], [0]]))
+        # evaluate
+        V0 = self.evaluate_policy(
+            initial_policy,
+        )
 
-        #improve
+        # improve
         V = self.R + self.discount * np.dot(self.T, V0)
-        policy = np.argmax(V, axis = 0)
+        policy = np.argmax(V, axis=0)
         print("Value0: \n", V)
 
         h = 0
         updated_policy = policy
-        while h<n_iteration:
-            #evaluate
-            Vi =self.evaluate_policy_partially(updated_policy, np.array([[0], [0], [0], [0]]))
-            
-            #improve
+        while h < n_iteration:
+            # evaluate
+            Vi = self.evaluate_policy_partially(
+                updated_policy, np.array([[0], [0], [0], [0]])
+            )
+
+            # improve
             V = self.R + self.discount * np.dot(self.T, Vi)
             print(f"Value{h+1}: \n", V)
             print(f"Optimal Value{h+1}: \n", np.maximum(*V))
-            new_policy = np.argmax(V, axis = 0)
+            new_policy = np.argmax(V, axis=0)
             if all(np.equal(updated_policy, new_policy)):
                 break
             updated_policy = new_policy
-            h-=-1
-        return updated_policy
+            h -= -1
 
+        print(f"Converged in {h+1} steps")
+        return updated_policy
 
     def evaluate_policy_partially(
         self,
@@ -201,40 +222,47 @@ class MDP:
 
         return new_v
 
-    
-    def modified_policy_iteration(self, initial_policy:np.ndarray, n_eval_iteration=5, n_iteration=np.inf, tolerance=0.01)->np.ndarray:
+    def modified_policy_iteration(
+        self,
+        initial_policy: np.ndarray,
+        n_eval_iteration=5,
+        n_iteration=np.inf,
+        tolerance=0.01,
+    ) -> np.ndarray:
         """
 
-        a procedure for the modified policy iteration def modifiedPolicyIteration () that 
+        a procedure for the modified policy iteration def modifiedPolicyIteration () that
 
-        params 
+        params
         initial_policy – Initial policy: array of |S| entries
-        initial_v -- Initial value function: array of |S| entries 
+        initial_v -- Initial value function: array of |S| entries
         n_eval_iterations -- limit on the number of iterations to be performed in each partial policy evaluation: scalar (default: 5)
         n_iterations -- limit on the number of iterations to be performed in modified policy iteration: scalar (default: infinity)
         tolerance -- threshold on ‖𝑉𝑛 − 𝑉𝑛+1‖∞ that will be compared to a variable epsilon(initialized to np.inf): scalar (default: 0.01)
         """
-        V0 =self.evaluate_policy_partially(initial_policy, np.array([[0], [0], [0], [0]]),n_eval_iteration)
-        #improve
+        V0 = self.evaluate_policy_partially(
+            initial_policy, np.array([[0], [0], [0], [0]]), n_eval_iteration
+        )
+        # improve
         V = self.R + self.discount * np.dot(self.T, V0)
-        policy = np.argmax(V, axis = 0)
+        policy = np.argmax(V, axis=0)
         print("Initial Policy: \n", initial_policy)
         print(f"P0:\n {policy}")
         print("Value0: \n", V0)
         h = 0
         updated_policy = policy
-        while h<n_iteration:
-            #evaluate
-            Vi =self.evaluate_policy_partially(updated_policy, np.array([[0], [0], [0], [0]]), n_eval_iteration)
+        while h < n_iteration:
+            # evaluate
+            Vi = self.evaluate_policy_partially(
+                updated_policy, np.array([[0], [0], [0], [0]]), n_eval_iteration
+            )
             print(f"Value{h+1}: \n", Vi)
-            #improve
+            # improve
             V = self.R + self.discount * np.dot(self.T, Vi)
-            new_policy = np.argmax(V, axis = 0)
+            new_policy = np.argmax(V, axis=0)
             print(f"P{h+1}:\n {new_policy}")
             if all(np.equal(updated_policy, new_policy)):
                 break
             updated_policy = new_policy
-            h-=-1
+            h -= -1
         return updated_policy
-
-

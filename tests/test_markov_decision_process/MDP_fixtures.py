@@ -7,7 +7,8 @@ import pytest
 import numpy as np
 import os
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from rl_toolkit.markov_decision_process.MDP import MDP
 
 
@@ -42,8 +43,7 @@ def mdp(T, R, gamma):
 def initial_v():
     return np.array([[0], [0], [0], [0]])
 
+
 @pytest.fixture
 def initial_policy():
-    return np.array([[1],[1],[1],[1]])
-
-
+    return np.array([[0], [0], [0], [0]])
