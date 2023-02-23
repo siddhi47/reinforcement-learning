@@ -231,27 +231,19 @@ class MDP:
         n_iterations -- limit on the number of iterations to be performed in modified policy iteration: scalar (default: infinity)
         tolerance -- threshold on ‖𝑉𝑛 − 𝑉𝑛+1‖∞ that will be compared to a variable epsilon(initialized to np.inf): scalar (default: 0.01)
         """
-        V0 = self.evaluate_policy_partially(
-            initial_policy, np.array([[0], [0], [0], [0]]), n_eval_iteration
-        )
-        # improve
-        V = self.R + self.discount * np.dot(self.T, V0)
-        policy = np.argmax(V, axis=0)
-        print("Initial Policy: \n", initial_policy)
-        print(f"P0:\n {policy}")
-        print("Value0: \n", V0)
+        
         h = 0
-        updated_policy = policy
+        updated_policy = initial_policy
         while h < n_iteration:
             # evaluate
             Vi = self.evaluate_policy_partially(
                 updated_policy, np.array([[0], [0], [0], [0]]), n_eval_iteration
             )
-            print(f"Value{h+1}: \n", Vi)
+            print(f"Value{h}: \n", Vi)
             # improve
             V = self.R + self.discount * np.dot(self.T, Vi)
             new_policy = np.argmax(V, axis=0)
-            print(f"P{h+1}:\n {new_policy}")
+            print(f"P{h}:\n {new_policy}")
             if all(np.equal(updated_policy, new_policy)):
                 break
             updated_policy = new_policy
