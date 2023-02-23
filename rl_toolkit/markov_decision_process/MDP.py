@@ -21,7 +21,7 @@ class MDP:
         if type(discount) is not float:
             raise TypeError("discount must be a float")
         if not (0 <= discount < 1):
-            raise ValueError("discount must be between 0 and 1, i.e. [0,1)")
+            raise ValueError("discount must be between 0 and 1, i.e. [0,1]")
         self.T = T
         self.R = R
         self.discount = discount
@@ -162,7 +162,7 @@ class MDP:
         # improve
         V = self.R + self.discount * np.dot(self.T, V0)
         policy = np.argmax(V, axis=0)
-        print("Value0: \n", V)
+        print("Value 0: \n", V)
 
         h = 0
         updated_policy = policy
@@ -174,8 +174,8 @@ class MDP:
 
             # improve
             V = self.R + self.discount * np.dot(self.T, Vi)
-            print(f"Value{h+1}: \n", V)
-            print(f"Optimal Value{h+1}: \n", np.maximum(*V))
+            print(f"Value {h+1}: \n", V)
+            print(f"Optimal Value {h+1}: \n", np.maximum(*V))
             new_policy = np.argmax(V, axis=0)
             if all(np.equal(updated_policy, new_policy)):
                 break
@@ -254,7 +254,8 @@ class MDP:
         while h < n_iteration:
             # evaluate
             Vi = self.evaluate_policy_partially(
-                updated_policy, np.array([[0], [0], [0], [0]]), n_eval_iteration
+                updated_policy, np.array(
+                    [[0], [0], [0], [0]]), n_eval_iteration
             )
             print(f"Value{h+1}: \n", Vi)
             # improve
