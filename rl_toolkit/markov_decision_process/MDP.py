@@ -155,27 +155,18 @@ class MDP:
             new_policy of |S| entries
         """
         # evaluate
-        V0 = self.evaluate_policy(
-            initial_policy,
-        )
-
-        # improve
-        V = self.R + self.discount * np.dot(self.T, V0)
-        policy = np.argmax(V, axis=0)
-        print("Value0: \n", V)
-
         h = 0
-        updated_policy = policy
+        updated_policy = initial_policy
         while h < n_iteration:
             # evaluate
-            Vi = self.evaluate_policy_partially(
-                updated_policy, np.array([[0], [0], [0], [0]])
+            Vi = self.evaluate_policy(
+                updated_policy, 
             )
 
             # improve
             V = self.R + self.discount * np.dot(self.T, Vi)
-            print(f"Value{h+1}: \n", V)
-            print(f"Optimal Value{h+1}: \n", np.maximum(*V))
+            print(f"Value{h}: \n", V)
+            print(f"Optimal Value{h}: \n", np.maximum(*V))
             new_policy = np.argmax(V, axis=0)
             if all(np.equal(updated_policy, new_policy)):
                 break
