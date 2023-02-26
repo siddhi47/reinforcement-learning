@@ -57,7 +57,7 @@ class MDP:
             if counter > n_iteration or epsilon < tolerance:
                 break
         print("Converged in ", counter, " steps")
-        return new_v
+        return new_v, counter, epsilon
 
     def extract_policy(self, V: np.ndarray) -> np.ndarray:
         """
@@ -174,7 +174,7 @@ class MDP:
             h -= -1
 
         print(f"Converged in {h+1} steps")
-        return updated_policy
+        return updated_policy, h
 
     def evaluate_policy_partially(
         self,
@@ -211,7 +211,7 @@ class MDP:
             if counter > n_iteration or epsilon < tolerance:
                 break
 
-        return new_v
+        return new_v, counter, epsilon
 
     def modified_policy_iteration(
         self,
@@ -219,7 +219,7 @@ class MDP:
         n_eval_iteration=5,
         n_iteration=np.inf,
         tolerance=0.01,
-    ) -> np.ndarray:
+    ) -> np.ndarray :
         """
 
         a procedure for the modified policy iteration def modifiedPolicyIteration () that
@@ -248,4 +248,4 @@ class MDP:
                 break
             updated_policy = new_policy
             h -= -1
-        return updated_policy
+        return updated_policy, h
