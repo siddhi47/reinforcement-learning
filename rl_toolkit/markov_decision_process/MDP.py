@@ -25,6 +25,8 @@ class MDP:
         self.T = T
         self.R = R
         self.discount = discount
+        self.n_states = T.shape[1]
+        self.n_actions = T.shape[0]
 
     def value_iteration(
         self, initial_v: np.ndarray, n_iteration=np.inf, tolerance=0.01
