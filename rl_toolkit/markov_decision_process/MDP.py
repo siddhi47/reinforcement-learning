@@ -59,7 +59,7 @@ class MDP:
             if counter > n_iteration or epsilon < tolerance:
                 break
         print("Converged in ", counter, " steps")
-        return new_v
+        return new_v, counter, epsilon
 
     def extract_policy(self, V: np.ndarray) -> np.ndarray:
         """
@@ -157,27 +157,18 @@ class MDP:
             new_policy of |S| entries
         """
         # evaluate
-        V0 = self.evaluate_policy(
-            initial_policy,
-        )
-
-        # improve
-        V = self.R + self.discount * np.dot(self.T, V0)
-        policy = np.argmax(V, axis=0)
-        print("Value0: \n", V)
-
         h = 0
-        updated_policy = policy
+        updated_policy = initial_policy
         while h < n_iteration:
             # evaluate
-            Vi = self.evaluate_policy_partially(
-                updated_policy, np.array([[0], [0], [0], [0]])
+            Vi = self.evaluate_policy(
+                updated_policy, 
             )
 
             # improve
             V = self.R + self.discount * np.dot(self.T, Vi)
-            print(f"Value{h+1}: \n", V)
-            print(f"Optimal Value{h+1}: \n", np.maximum(*V))
+            print(f"Value{h}: \n", V)
+            print(f"Optimal Value{h}: \n", np.maximum(*V))
             new_policy = np.argmax(V, axis=0)
             if all(np.equal(updated_policy, new_policy)):
                 break
@@ -185,7 +176,7 @@ class MDP:
             h -= -1
 
         print(f"Converged in {h+1} steps")
-        return updated_policy
+        return updated_policy, h
 
     def evaluate_policy_partially(
         self,
@@ -222,7 +213,7 @@ class MDP:
             if counter > n_iteration or epsilon < tolerance:
                 break
 
-        return new_v
+        return new_v, counter, epsilon
 
     def modified_policy_iteration(
         self,
@@ -230,7 +221,7 @@ class MDP:
         n_eval_iteration=5,
         n_iteration=np.inf,
         tolerance=0.01,
-    ) -> np.ndarray:
+    ) -> np.ndarray :
         """
 
         a procedure for the modified policy iteration def modifiedPolicyIteration () that
@@ -242,29 +233,21 @@ class MDP:
         n_iterations -- limit on the number of iterations to be performed in modified policy iteration: scalar (default: infinity)
         tolerance -- threshold on ‖𝑉𝑛 − 𝑉𝑛+1‖∞ that will be compared to a variable epsilon(initialized to np.inf): scalar (default: 0.01)
         """
-        V0 = self.evaluate_policy_partially(
-            initial_policy, np.array([[0], [0], [0], [0]]), n_eval_iteration
-        )
-        # improve
-        V = self.R + self.discount * np.dot(self.T, V0)
-        policy = np.argmax(V, axis=0)
-        print("Initial Policy: \n", initial_policy)
-        print(f"P0:\n {policy}")
-        print("Value0: \n", V0)
+        
         h = 0
-        updated_policy = policy
+        updated_policy = initial_policy
         while h < n_iteration:
             # evaluate
             Vi = self.evaluate_policy_partially(
                 updated_policy, np.array([[0], [0], [0], [0]]), n_eval_iteration
             )
-            print(f"Value{h+1}: \n", Vi)
+            print(f"Value{h}: \n", Vi)
             # improve
             V = self.R + self.discount * np.dot(self.T, Vi)
             new_policy = np.argmax(V, axis=0)
-            print(f"P{h+1}:\n {new_policy}")
+            print(f"P{h}:\n {new_policy}")
             if all(np.equal(updated_policy, new_policy)):
                 break
             updated_policy = new_policy
             h -= -1
-        return updated_policy
+        return updated_policy, h
