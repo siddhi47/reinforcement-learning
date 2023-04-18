@@ -73,5 +73,7 @@ def test_policy_iteration_using_linalg(mdp, initial_policy):
 
 def test_modified_policy_iteration(mdp, initial_policy):
     print("Modified policy iteration")
-    value = mdp.modified_policy_iteration(initial_policy, )
+    value = mdp.modified_policy_iteration(
+        initial_policy,
+    )
     print(30 * "*")

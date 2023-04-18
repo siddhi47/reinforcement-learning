@@ -12,9 +12,7 @@ def test_qlearning(mdp):
     rl = RL(mdp)
     s0 = 0
     initial_q = np.zeros((mdp.n_actions, mdp.n_states))
-    n_episodes = 100
+    n_episodes = 1000
     n_steps = 100
-    epsilon = 0.1
+    epsilon = 0.3
     Q = rl.q_learning(s0, initial_q, n_episodes, n_steps, epsilon)
-    print(Q)
-

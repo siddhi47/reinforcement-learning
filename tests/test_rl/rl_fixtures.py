@@ -26,7 +26,8 @@ def T():
 
 @pytest.fixture
 def R():
-    return  np.array([[0,0,10,10],[0,0,10,10]])
+    return np.array([[0, 0, 10, 10], [0, 0, 10, 10]])
+
 
 @pytest.fixture
 def gamma():
@@ -36,4 +37,3 @@ def gamma():
 @pytest.fixture
 def mdp(T, R, gamma):
     return MDP(T, R, gamma)
-

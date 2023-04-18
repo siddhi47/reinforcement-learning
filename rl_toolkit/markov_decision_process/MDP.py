@@ -162,7 +162,7 @@ class MDP:
         while h < n_iteration:
             # evaluate
             Vi = self.evaluate_policy(
-                updated_policy, 
+                updated_policy,
             )
 
             # improve
@@ -221,7 +221,7 @@ class MDP:
         n_eval_iteration=5,
         n_iteration=np.inf,
         tolerance=0.01,
-    ) -> np.ndarray :
+    ) -> np.ndarray:
         """
 
         a procedure for the modified policy iteration def modifiedPolicyIteration () that
@@ -233,7 +233,7 @@ class MDP:
         n_iterations -- limit on the number of iterations to be performed in modified policy iteration: scalar (default: infinity)
         tolerance -- threshold on ‖𝑉𝑛 − 𝑉𝑛+1‖∞ that will be compared to a variable epsilon(initialized to np.inf): scalar (default: 0.01)
         """
-        
+
         h = 0
         updated_policy = initial_policy
         while h < n_iteration:
